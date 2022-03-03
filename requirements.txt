@@ -1,5 +1,4 @@
 functools
-math
 matplotlib
 numpy
 scipy
