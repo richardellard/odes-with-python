@@ -1,4 +1,3 @@
-functools
 matplotlib
 numpy
 scipy
