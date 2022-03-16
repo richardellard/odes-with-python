@@ -1,5 +1,17 @@
 class Matrix:
     def __init__(self, entries):
+        # check all rows are the same length
+        n = len(entries[0])
+        for row in entries:
+            if len(row) != n:
+                raise Exception('all rows must be the same length')
+                
+        # n is now the number of columns
+        if len(entries) > n:
+            raise Exception('attempted to create a matrix with more rows than columns, marith2 supports only square matrices')
+        if len(entries) < n:
+            raise Exception('attempted to create a matrix with fewer rows than columns, marith2 supports only square matrices')
+        
         self.entries = entries
         
     def size(self):
@@ -7,11 +19,17 @@ class Matrix:
         
     def __add__(M, N):
         n = M.size()
+        n2 = N.size()
+        if n != n2:
+            raise Exception('cannot add square matrices of different sizes (' + str(n) + ' and ' + str(n2) + ')')
         
         return Matrix([[M.entries[i][j] + N.entries[i][j] for j in range(n)] for i in range(n)])
     
     def __mul__(M, N):
         n = M.size()
+        n2 = N.size()
+        if n != n2:
+            raise Exception('cannot multiply square matrices of different sizes (' + str(n) + ' and ' + str(n2) + ')')
         
         return Matrix([[sum([M.entries[i][k]*N.entries[k][j] for k in range(n)]) for j in range(n)] for i in range(n)])
     
@@ -26,6 +44,22 @@ class Matrix:
     
     def __getitem__(self, i):
         return self.entries[i]
+    
+    def determinant(self):
+        n = self.size()
+        
+        if n == 1:
+            return self.entries[0][0]
+        
+        # return the Laplace expansion along the first row
+        return sum([(-1)**j*self.entries[0][j]*self.minor_matrix(0,j).determinant() for j in range(n)])
+    
+    # returns submatrix with row i and column j deleted
+    def minor_matrix(self, s, t):
+        n = self.size()
+        
+        return Matrix([[self.entries[i][j] for j in list(range(t))+list(range(t+1,n))] for i in list(range(s))+list(range(s+1,n))])
+            
     
 def identity(n):
     return Matrix([[int(i==j) for j in range(n)] for i in range(n)])
